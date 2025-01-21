@@ -7,7 +7,6 @@ namespace QuotationSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-
     public class MovementController : ControllerBase
     {
         private readonly IMovementRepository _movementRepository;

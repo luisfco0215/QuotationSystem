@@ -18,6 +18,9 @@ builder.Services.AddScoped<IMovementRepository>(sp =>
 builder.Services.AddScoped<IProductRepository>(sp =>
     new ProductRepository(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<IQuoteRepository>(sp =>
+    new QuoteRepository(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddCors(option =>
 {
     option.AddPolicy("AllowSpecificOrigins", builder =>

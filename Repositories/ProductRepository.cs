@@ -13,7 +13,6 @@ namespace QuotationSystem.Repositories
             _dbConnection = new DbConnection(connecitonString);
         }
 
-
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
             var products = new List<Product>();
