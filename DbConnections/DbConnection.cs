@@ -5,7 +5,6 @@ namespace QuotationSystem.DbConnections
 {
     public class DbConnection(string connectionString)
     {
-
         public SqlConnection GetConnection()
         {
             return new SqlConnection(connectionString);

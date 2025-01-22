@@ -47,22 +47,46 @@ namespace QuotationSystem.Repositories
 
         public async Task AddAsync(Quote quote)
         {
-            var connection = new SqlConnection(_connectionString);
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
 
-            await connection.OpenAsync();
+                string query = @"INSERT INTO Quote (Client, PhoneNumber, TotalAmount, [Date]) 
+                         VALUES (@Client, @PhoneNumber, @TotalAmount, @Date);
+                         SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
-            string query = @"INSERT INTO Quote (Client, PhoneNumber, TotalAmount, [Date]) 
-                             VALUES (@Client, @PhoneNumber, @TotalAmount, @Date);
-                             SELECT SCOPE_IDENTITY();";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Client", quote.Client);
+                    command.Parameters.AddWithValue("@PhoneNumber", quote.PhoneNumber);
+                    command.Parameters.AddWithValue("@TotalAmount", quote.TotalAmount);
+                    command.Parameters.AddWithValue("@Date", quote.Date);
 
-            var command = new SqlCommand(query, connection);
+                    quote.QuoteID = (int)await command.ExecuteScalarAsync();
+                }
 
-            command.Parameters.AddWithValue("@Client", quote.Client);
-            command.Parameters.AddWithValue("@PhoneNumber", quote.PhoneNumber);
-            command.Parameters.AddWithValue("@TotalAmount", quote.TotalAmount);
-            command.Parameters.AddWithValue("@Date", quote.Date);
+                foreach (var item in quote.Movements)
+                {
+                    item.QuoteID = quote.QuoteID;
+                    await AddMovementAsync(item, connection).ConfigureAwait(false);
+                }
+            }
+        }
 
-            await command.ExecuteScalarAsync();
+        public async Task AddMovementAsync(Movement movement, SqlConnection connection)
+        {
+            string query = @"INSERT INTO Movement (ProductID, QuoteID, Quantity, TotalAmount) 
+                     VALUES (@ProductID, @QuoteID, @Quantity, @TotalAmount)";
+
+            using (var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@ProductID", movement.ProductID);
+                command.Parameters.AddWithValue("@QuoteID", movement.QuoteID);
+                command.Parameters.AddWithValue("@Quantity", movement.Quantity);
+                command.Parameters.AddWithValue("@TotalAmount", movement.TotalAmount);
+
+                await command.ExecuteNonQueryAsync();
+            }
         }
     }
 }

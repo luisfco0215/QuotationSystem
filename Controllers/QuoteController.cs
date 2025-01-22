@@ -25,6 +25,8 @@ namespace QuotationSystem.Controllers
         [HttpPost]
         public async Task Add([FromBody] Quote request)
         {
+            request.Date = request.Date ?? DateTime.Now;
+
             await _quoteRepository.AddAsync(request);
         }
     }

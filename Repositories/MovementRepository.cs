@@ -28,7 +28,6 @@ namespace QuotationSystem.Repositories
 
             var reader = command.ExecuteReader();
 
-
             while (reader.Read())
             {
                 movements.Add(new Movement

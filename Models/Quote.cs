@@ -18,5 +18,7 @@ namespace QuotationSystem.Models
         public decimal? TotalAmount { get; set; }
 
         public DateTime? Date { get; set; }
+
+        public List<Movement> Movements { get; set; } = new List<Movement>();
     }
 }
